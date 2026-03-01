@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# 🛒 生活必需品かんばんアプリ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+トヨタ生産方式（TPS）の**かんばん方式**を、日常の在庫管理に適用したWebアプリ。
 
-## Available Scripts
+## コンセプト
 
-In the project directory, you can run:
+> 最後の1つを開封したら「かんばん発行」→ 買い物リストに自動反映 → 買ったら在庫に戻る。
 
-### `npm start`
+工場の部品補充と同じ仕組みを、日用品の買い物に応用する。
+「無くなりそう」に気づいた瞬間にタップするだけで、買い忘れがゼロになる。
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 機能
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **在庫ボード** — 全アイテムをカード表示。タップで「かんばん発行」（色が変わる）
+- **買い物リスト** — 発行中のアイテムだけ表示。タップで「購入完了」→ 在庫に戻る
+- **データ永続化** — localStorage で状態を保持（リロードしても消えない）
 
-### `npm test`
+## デモ
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+👉 **https://sho-inoue06.github.io/kanban-app/**
 
-### `npm run build`
+## 技術スタック
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- React 19
+- GitHub Pages（デプロイ）
+- localStorage（データ保存）
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 開発
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    npm start       # 開発サーバー起動
+    npm run build   # 本番ビルド
+    npm run deploy  # GitHub Pagesにデプロイ
 
-### `npm run eject`
+## 今後の予定
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- アイテムの追加・削除・編集
+- カテゴリ分け（食品 / 日用品 / 消耗品）
+- 店舗別グルーピング表示
+- PWA対応
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Author
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+[@sho-inoue06](https://github.com/sho-inoue06)
