@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import StockBoard from "./StockBoard";
 import ShoppingList from "./ShoppingList.js";
+import AddItemForm from "./AddItemForm";
 
 const defaultItems = [
   { id: 1, name: "洗剤", issued: false },
@@ -44,6 +45,19 @@ function App() {
     );
   };
 
+  const handleAddItem = (name) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+
+    const newItem = {
+      id: Date.now(),
+      name: trimmedName,
+      issued: false,
+    };
+
+    setItems((prevItems) => [...prevItems, newItem]);
+  };
+
   return (
     <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ marginTop: 0 }}>在庫管理MVP</h1>
@@ -57,7 +71,12 @@ function App() {
         </button>
       </div>
 
-      {tab === "stock" && <StockBoard items={items} onIssue={handleIssue} />}
+      {tab === "stock" && (
+        <>
+          <AddItemForm onAdd={handleAddItem} />
+          <StockBoard items={items} onIssue={handleIssue} />
+        </>
+      )}
       {tab === "shopping" && (
         <ShoppingList items={items} onPurchase={handlePurchase} />
       )}
