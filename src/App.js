@@ -58,6 +58,10 @@ function App() {
     setItems((prevItems) => [...prevItems, newItem]);
   };
 
+  const handleDeleteItem = (id) => {
+    setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
   return (
     <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ marginTop: 0 }}>在庫管理MVP</h1>
@@ -74,7 +78,11 @@ function App() {
       {tab === "stock" && (
         <>
           <AddItemForm onAdd={handleAddItem} />
-          <StockBoard items={items} onIssue={handleIssue} />
+          <StockBoard
+            items={items}
+            onIssue={handleIssue}
+            onDelete={handleDeleteItem}
+          />
         </>
       )}
       {tab === "shopping" && (

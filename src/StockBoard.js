@@ -1,7 +1,7 @@
 import React from "react";
 import ItemCard from "./ItemCard";
 
-function StockBoard({ items = [], onIssue }) {
+function StockBoard({ items = [], onIssue, onDelete }) {
   const handleTap = (id) => {
     const item = items.find((x) => x.id === id);
     if (!item) return;
@@ -20,7 +20,12 @@ function StockBoard({ items = [], onIssue }) {
         }}
       >
         {items.map((item) => (
-          <ItemCard key={item.id} item={item} onTap={handleTap} />
+          <ItemCard
+            key={item.id}
+            item={item}
+            onTap={handleTap}
+            onDelete={onDelete}
+          />
         ))}
       </div>
     </div>
