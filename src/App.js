@@ -62,6 +62,17 @@ function App() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  const handleEditItem = (id, name) => {
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, name: trimmedName } : item
+      )
+    );
+  };
+
   return (
     <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ marginTop: 0 }}>在庫管理MVP</h1>
@@ -82,6 +93,7 @@ function App() {
             items={items}
             onIssue={handleIssue}
             onDelete={handleDeleteItem}
+            onEdit={handleEditItem}
           />
         </>
       )}

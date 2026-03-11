@@ -1,7 +1,7 @@
 import React from "react";
 import ItemCard from "./ItemCard";
 
-function StockBoard({ items = [], onIssue, onDelete }) {
+function StockBoard({ items = [], onIssue, onDelete, onEdit }) {
   const handleTap = (id) => {
     const item = items.find((x) => x.id === id);
     if (!item) return;
@@ -25,6 +25,7 @@ function StockBoard({ items = [], onIssue, onDelete }) {
             item={item}
             onTap={handleTap}
             onDelete={onDelete}
+            onEdit={onEdit}
           />
         ))}
       </div>
