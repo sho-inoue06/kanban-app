@@ -3,12 +3,15 @@ import StockBoard from "./StockBoard";
 import ShoppingList from "./ShoppingList.js";
 import AddItemForm from "./AddItemForm";
 
+const defaultCategory = "日用品";
+const categories = ["日用品", "食品", "飲み物", "掃除", "その他"];
+
 const defaultItems = [
-  { id: 1, name: "洗剤", issued: false },
-  { id: 2, name: "シャンプー", issued: false },
-  { id: 3, name: "トイレットペーパー", issued: false },
-  { id: 4, name: "ラップ", issued: false },
-  { id: 5, name: "ゴミ袋", issued: false },
+  { id: 1, name: "洗剤", issued: false, category: "掃除" },
+  { id: 2, name: "シャンプー", issued: false, category: "日用品" },
+  { id: 3, name: "トイレットペーパー", issued: false, category: "日用品" },
+  { id: 4, name: "ラップ", issued: false, category: "食品" },
+  { id: 5, name: "ゴミ袋", issued: false, category: "掃除" },
 ];
 
 function App() {
@@ -19,7 +22,10 @@ function App() {
     if (!saved) return defaultItems;
 
     try {
-      return JSON.parse(saved);
+      return JSON.parse(saved).map((item) => ({
+        ...item,
+        category: item.category || defaultCategory,
+      }));
     } catch {
       return defaultItems;
     }
@@ -45,7 +51,7 @@ function App() {
     );
   };
 
-  const handleAddItem = (name) => {
+  const handleAddItem = (name, category) => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
@@ -53,6 +59,7 @@ function App() {
       id: Date.now(),
       name: trimmedName,
       issued: false,
+      category: category || defaultCategory,
     };
 
     setItems((prevItems) => [...prevItems, newItem]);
@@ -62,13 +69,19 @@ function App() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const handleEditItem = (id, name) => {
+  const handleEditItem = (id, name, category) => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, name: trimmedName } : item
+        item.id === id
+          ? {
+              ...item,
+              name: trimmedName,
+              category: category || item.category || defaultCategory,
+            }
+          : item
       )
     );
   };
@@ -88,17 +101,22 @@ function App() {
 
       {tab === "stock" && (
         <>
-          <AddItemForm onAdd={handleAddItem} />
+          <AddItemForm onAdd={handleAddItem} categories={categories} />
           <StockBoard
             items={items}
             onIssue={handleIssue}
             onDelete={handleDeleteItem}
             onEdit={handleEditItem}
+            categories={categories}
           />
         </>
       )}
       {tab === "shopping" && (
-        <ShoppingList items={items} onPurchase={handlePurchase} />
+        <ShoppingList
+          items={items}
+          onPurchase={handlePurchase}
+          categories={categories}
+        />
       )}
     </div>
   );

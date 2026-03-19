@@ -1,18 +1,21 @@
 import { useState } from "react";
 
-function ItemCard({ item, onTap, onDelete, onEdit }) {
+function ItemCard({ item, onTap, onDelete, onEdit, categories = [] }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draftName, setDraftName] = useState(item.name);
+  const [draftCategory, setDraftCategory] = useState(item.category || categories[0] || "その他");
 
   const startEdit = (event) => {
     event.stopPropagation();
     setDraftName(item.name);
+    setDraftCategory(item.category || categories[0] || "その他");
     setIsEditing(true);
   };
 
   const cancelEdit = (event) => {
     event.stopPropagation();
     setDraftName(item.name);
+    setDraftCategory(item.category || categories[0] || "その他");
     setIsEditing(false);
   };
 
@@ -22,7 +25,7 @@ function ItemCard({ item, onTap, onDelete, onEdit }) {
     const trimmedName = draftName.trim();
     if (!trimmedName) return;
 
-    onEdit(item.id, trimmedName);
+    onEdit(item.id, trimmedName, draftCategory);
     setIsEditing(false);
   };
 
@@ -61,6 +64,22 @@ function ItemCard({ item, onTap, onDelete, onEdit }) {
               border: "none",
             }}
           />
+          <select
+            value={draftCategory}
+            onClick={(event) => event.stopPropagation()}
+            onChange={(event) => setDraftCategory(event.target.value)}
+            style={{
+              padding: "8px 10px",
+              borderRadius: "8px",
+              border: "none",
+            }}
+          >
+            {categories.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
           <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
             <button
               type="button"
@@ -91,6 +110,7 @@ function ItemCard({ item, onTap, onDelete, onEdit }) {
       ) : (
         <>
           <div>{item.name}</div>
+          <div style={{ fontSize: "14px", opacity: 0.9 }}>{item.category}</div>
           <div style={{ display: "flex", justifyContent: "center", gap: "8px" }}>
             <button
               type="button"

@@ -1,7 +1,8 @@
 import { useState } from "react";
 
-function AddItemForm({ onAdd }) {
+function AddItemForm({ onAdd, categories = [] }) {
   const [name, setName] = useState("");
+  const [category, setCategory] = useState(categories[0] || "その他");
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -9,8 +10,9 @@ function AddItemForm({ onAdd }) {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
-    onAdd(trimmedName);
+    onAdd(trimmedName, category);
     setName("");
+    setCategory(categories[0] || "その他");
   };
 
   return (
@@ -25,6 +27,17 @@ function AddItemForm({ onAdd }) {
         placeholder="アイテム名を入力"
         style={{ flex: 1, padding: "8px 12px" }}
       />
+      <select
+        value={category}
+        onChange={(event) => setCategory(event.target.value)}
+        style={{ padding: "8px 12px" }}
+      >
+        {categories.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
       <button type="submit">追加</button>
     </form>
   );
