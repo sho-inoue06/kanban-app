@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import StockBoard from "./StockBoard";
 import ShoppingList from "./ShoppingList.js";
 import AddItemForm from "./AddItemForm";
+import CategoryManager from "./CategoryManager";
+import ItemManager from "./ItemManager";
 
 const defaultCategory = "日用品";
-const categories = ["日用品", "食品", "飲み物", "掃除", "その他"];
+const defaultCategories = ["日用品", "食品", "飲み物", "掃除", "その他"];
 
 const defaultItems = [
   { id: 1, name: "洗剤", issued: false, category: "掃除" },
@@ -16,6 +18,18 @@ const defaultItems = [
 
 function App() {
   const [tab, setTab] = useState("stock");
+  const [categories, setCategories] = useState(() => {
+    const saved = localStorage.getItem("categories");
+
+    if (!saved) return defaultCategories;
+
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultCategories;
+    } catch {
+      return defaultCategories;
+    }
+  });
   const [items, setItems] = useState(() => {
     const saved = localStorage.getItem("items");
 
@@ -34,6 +48,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("items", JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    localStorage.setItem("categories", JSON.stringify(categories));
+  }, [categories]);
 
   const handleIssue = (id) => {
     setItems((prevItems) =>
@@ -86,6 +104,27 @@ function App() {
     );
   };
 
+  const handleEditCategory = (oldCategory, newCategory) => {
+    const trimmedCategory = newCategory.trim();
+
+    if (!trimmedCategory || oldCategory === trimmedCategory) return;
+    if (categories.includes(trimmedCategory)) return;
+
+    setCategories((prevCategories) =>
+      prevCategories.map((category) =>
+        category === oldCategory ? trimmedCategory : category
+      )
+    );
+
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.category === oldCategory
+          ? { ...item, category: trimmedCategory }
+          : item
+      )
+    );
+  };
+
   return (
     <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ marginTop: 0 }}>在庫管理MVP</h1>
@@ -97,19 +136,13 @@ function App() {
         <button type="button" onClick={() => setTab("shopping")}>
           買い物リスト
         </button>
+        <button type="button" onClick={() => setTab("manage")}>
+          管理
+        </button>
       </div>
 
       {tab === "stock" && (
-        <>
-          <AddItemForm onAdd={handleAddItem} categories={categories} />
-          <StockBoard
-            items={items}
-            onIssue={handleIssue}
-            onDelete={handleDeleteItem}
-            onEdit={handleEditItem}
-            categories={categories}
-          />
-        </>
+        <StockBoard items={items} onIssue={handleIssue} categories={categories} />
       )}
       {tab === "shopping" && (
         <ShoppingList
@@ -117,6 +150,38 @@ function App() {
           onPurchase={handlePurchase}
           categories={categories}
         />
+      )}
+      {tab === "manage" && (
+        <div
+          style={{
+            backgroundColor: "#f1ede4",
+            border: "2px solid #b8ad98",
+            borderRadius: 12,
+            padding: 16,
+          }}
+        >
+          <h2
+            style={{
+              marginTop: 0,
+              marginBottom: 16,
+              fontSize: 18,
+              letterSpacing: "0.08em",
+            }}
+          >
+            管理モード
+          </h2>
+          <AddItemForm onAdd={handleAddItem} categories={categories} />
+          <CategoryManager
+            categories={categories}
+            onEditCategory={handleEditCategory}
+          />
+          <ItemManager
+            items={items}
+            categories={categories}
+            onEditItem={handleEditItem}
+            onDeleteItem={handleDeleteItem}
+          />
+        </div>
       )}
     </div>
   );
