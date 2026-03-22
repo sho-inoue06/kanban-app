@@ -19,6 +19,21 @@ function ItemCard({ item, onTap }) {
     >
       <div>{item.name}</div>
       <div style={{ fontSize: "14px", opacity: 0.9 }}>{item.category}</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center" }}>
+        {(item.stores || []).map((store) => (
+          <span
+            key={store}
+            style={{
+              padding: "2px 8px",
+              borderRadius: "999px",
+              backgroundColor: "rgba(255, 255, 255, 0.18)",
+              fontSize: "12px",
+            }}
+          >
+            {store}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

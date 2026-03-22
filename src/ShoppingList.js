@@ -1,12 +1,22 @@
 import React from "react";
 
-function ShoppingList({ items, onPurchase, categories = [] }) {
-  // issued: true のアイテムだけフィルタ
+const uncategorizedStoreLabel = "店舗未設定";
+
+function ShoppingList({ items, onPurchase, stores = [] }) {
   const issuedItems = items.filter((item) => item.issued);
-  const groupedItems = categories
-    .map((category) => ({
-      category,
-      items: issuedItems.filter((item) => item.category === category),
+
+  const groupedItems = [...stores, uncategorizedStoreLabel]
+    .map((store) => ({
+      store,
+      items: issuedItems.filter((item) => {
+        const itemStores = item.stores || [];
+
+        if (store === uncategorizedStoreLabel) {
+          return itemStores.length === 0;
+        }
+
+        return itemStores.includes(store);
+      }),
     }))
     .filter((group) => group.items.length > 0);
 
@@ -14,15 +24,15 @@ function ShoppingList({ items, onPurchase, categories = [] }) {
     <div>
       <h2>🛒 買い物リスト</h2>
       {issuedItems.length === 0 ? (
-        <p style= {{color: "#888", textAlign: "center"}} >買うものはありません</p>
+        <p style={{ color: "#888", textAlign: "center" }}>買うものはありません</p>
       ) : (
         groupedItems.map((group) => (
-          <div key={group.category} style={{ marginBottom: "20px" }}>
-            <h3>{group.category}</h3>
-            <ul style={{ listStyle: "none", padding: 0}} >
+          <div key={group.store} style={{ marginBottom: "20px" }}>
+            <h3>{group.store}</h3>
+            <ul style={{ listStyle: "none", padding: 0 }}>
               {group.items.map((item) => (
                 <li
-                  key={item.id}
+                  key={`${group.store}-${item.id}`}
                   onClick={() => onPurchase(item.id)}
                   style={{
                     padding: "12px 16px",
@@ -33,7 +43,26 @@ function ShoppingList({ items, onPurchase, categories = [] }) {
                     fontSize: "16px",
                   }}
                 >
-                  {item.name}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: 6,
+                    }}
+                  >
+                    <span>{item.name}</span>
+                    <span
+                      style={{
+                        padding: "2px 8px",
+                        borderRadius: 999,
+                        backgroundColor: "#fff4b8",
+                        fontSize: "12px",
+                      }}
+                    >
+                      {item.category}
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>

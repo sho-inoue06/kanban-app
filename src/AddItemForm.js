@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import StoreSelector from "./StoreSelector";
 
-function AddItemForm({ onAdd, categories = [] }) {
+function AddItemForm({ onAdd, categories = [], stores = [] }) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState(categories[0] || "その他");
+  const [selectedStores, setSelectedStores] = useState([]);
+  const [isStorePickerOpen, setIsStorePickerOpen] = useState(false);
 
   useEffect(() => {
     if (!categories.includes(category)) {
@@ -16,9 +19,19 @@ function AddItemForm({ onAdd, categories = [] }) {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
-    onAdd(trimmedName, category);
+    onAdd(trimmedName, category, selectedStores);
     setName("");
     setCategory(categories[0] || "その他");
+    setSelectedStores([]);
+    setIsStorePickerOpen(false);
+  };
+
+  const toggleStore = (store) => {
+    setSelectedStores((prevStores) =>
+      prevStores.includes(store)
+        ? prevStores.filter((value) => value !== store)
+        : [...prevStores, store]
+    );
   };
 
   return (
@@ -26,6 +39,7 @@ function AddItemForm({ onAdd, categories = [] }) {
       onSubmit={handleSubmit}
       style={{
         display: "flex",
+        flexWrap: "wrap",
         gap: 8,
         marginBottom: 16,
         padding: 12,
@@ -61,6 +75,20 @@ function AddItemForm({ onAdd, categories = [] }) {
           </option>
         ))}
       </select>
+      <div
+        style={{
+          minWidth: "100%",
+        }}
+      >
+        <StoreSelector
+          stores={stores}
+          selectedStores={selectedStores}
+          isOpen={isStorePickerOpen}
+          onToggleOpen={() => setIsStorePickerOpen((prev) => !prev)}
+          onToggleStore={toggleStore}
+          buttonLabel="店舗を選ぶ"
+        />
+      </div>
       <button
         type="submit"
         style={{

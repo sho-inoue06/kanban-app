@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import StockBoard from "./StockBoard";
 import ShoppingList from "./ShoppingList.js";
 import AddItemForm from "./AddItemForm";
-import CategoryManager from "./CategoryManager";
 import ItemManager from "./ItemManager";
+import MasterDataManager from "./MasterDataManager";
 
 const defaultCategory = "日用品";
 const defaultCategories = ["日用品", "食品", "飲み物", "掃除", "その他"];
+const defaultStores = ["フェルナ", "スギ薬局"];
 
 const defaultItems = [
-  { id: 1, name: "洗剤", issued: false, category: "掃除" },
-  { id: 2, name: "シャンプー", issued: false, category: "日用品" },
-  { id: 3, name: "トイレットペーパー", issued: false, category: "日用品" },
-  { id: 4, name: "ラップ", issued: false, category: "食品" },
-  { id: 5, name: "ゴミ袋", issued: false, category: "掃除" },
+  { id: 1, name: "洗剤", issued: false, category: "掃除", stores: ["スギ薬局"] },
+  { id: 2, name: "シャンプー", issued: false, category: "日用品", stores: ["スギ薬局"] },
+  { id: 3, name: "トイレットペーパー", issued: false, category: "日用品", stores: ["フェルナ", "スギ薬局"] },
+  { id: 4, name: "ラップ", issued: false, category: "食品", stores: ["フェルナ"] },
+  { id: 5, name: "ゴミ袋", issued: false, category: "掃除", stores: ["フェルナ", "スギ薬局"] },
 ];
 
 function App() {
@@ -30,6 +31,18 @@ function App() {
       return defaultCategories;
     }
   });
+  const [stores, setStores] = useState(() => {
+    const saved = localStorage.getItem("stores");
+
+    if (!saved) return defaultStores;
+
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultStores;
+    } catch {
+      return defaultStores;
+    }
+  });
   const [items, setItems] = useState(() => {
     const saved = localStorage.getItem("items");
 
@@ -39,6 +52,7 @@ function App() {
       return JSON.parse(saved).map((item) => ({
         ...item,
         category: item.category || defaultCategory,
+        stores: Array.isArray(item.stores) ? item.stores : [],
       }));
     } catch {
       return defaultItems;
@@ -52,6 +66,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [categories]);
+
+  useEffect(() => {
+    localStorage.setItem("stores", JSON.stringify(stores));
+  }, [stores]);
 
   const handleIssue = (id) => {
     setItems((prevItems) =>
@@ -69,7 +87,7 @@ function App() {
     );
   };
 
-  const handleAddItem = (name, category) => {
+  const handleAddItem = (name, category, stores) => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
@@ -78,6 +96,7 @@ function App() {
       name: trimmedName,
       issued: false,
       category: category || defaultCategory,
+      stores: Array.isArray(stores) ? stores : [],
     };
 
     setItems((prevItems) => [...prevItems, newItem]);
@@ -87,7 +106,7 @@ function App() {
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const handleEditItem = (id, name, category) => {
+  const handleEditItem = (id, name, category, stores) => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
 
@@ -98,6 +117,7 @@ function App() {
               ...item,
               name: trimmedName,
               category: category || item.category || defaultCategory,
+              stores: Array.isArray(stores) ? stores : item.stores || [],
             }
           : item
       )
@@ -125,6 +145,74 @@ function App() {
     );
   };
 
+  const handleAddCategory = (categoryName) => {
+    const trimmedCategory = categoryName.trim();
+
+    if (!trimmedCategory || categories.includes(trimmedCategory)) return;
+
+    setCategories((prevCategories) => [...prevCategories, trimmedCategory]);
+  };
+
+  const handleDeleteCategory = (categoryName) => {
+    if (categories.length <= 1) return;
+
+    const fallbackCategory = categories.find((category) => category !== categoryName);
+    if (!fallbackCategory) return;
+
+    setCategories((prevCategories) =>
+      prevCategories.filter((category) => category !== categoryName)
+    );
+
+    setItems((prevItems) =>
+      prevItems.map((item) =>
+        item.category === categoryName
+          ? { ...item, category: fallbackCategory }
+          : item
+      )
+    );
+  };
+
+  const handleAddStore = (storeName) => {
+    const trimmedStore = storeName.trim();
+
+    if (!trimmedStore || stores.includes(trimmedStore)) return;
+
+    setStores((prevStores) => [...prevStores, trimmedStore]);
+  };
+
+  const handleEditStore = (oldStore, newStore) => {
+    const trimmedStore = newStore.trim();
+
+    if (!trimmedStore || oldStore === trimmedStore) return;
+    if (stores.includes(trimmedStore)) return;
+
+    setStores((prevStores) =>
+      prevStores.map((store) => (store === oldStore ? trimmedStore : store))
+    );
+
+    setItems((prevItems) =>
+      prevItems.map((item) => ({
+        ...item,
+        stores: (item.stores || []).map((store) =>
+          store === oldStore ? trimmedStore : store
+        ),
+      }))
+    );
+  };
+
+  const handleDeleteStore = (storeName) => {
+    if (stores.length <= 1) return;
+
+    setStores((prevStores) => prevStores.filter((store) => store !== storeName));
+
+    setItems((prevItems) =>
+      prevItems.map((item) => ({
+        ...item,
+        stores: (item.stores || []).filter((store) => store !== storeName),
+      }))
+    );
+  };
+
   return (
     <div style={{ padding: 16, maxWidth: 800, margin: "0 auto" }}>
       <h1 style={{ marginTop: 0 }}>在庫管理MVP</h1>
@@ -148,7 +236,7 @@ function App() {
         <ShoppingList
           items={items}
           onPurchase={handlePurchase}
-          categories={categories}
+          stores={stores}
         />
       )}
       {tab === "manage" && (
@@ -170,14 +258,29 @@ function App() {
           >
             管理モード
           </h2>
-          <AddItemForm onAdd={handleAddItem} categories={categories} />
-          <CategoryManager
+          <AddItemForm
+            onAdd={handleAddItem}
             categories={categories}
-            onEditCategory={handleEditCategory}
+            stores={stores}
+          />
+          <MasterDataManager
+            title="カテゴリ管理"
+            items={categories}
+            onAddItem={handleAddCategory}
+            onEditItem={handleEditCategory}
+            onDeleteItem={handleDeleteCategory}
+          />
+          <MasterDataManager
+            title="買える店管理"
+            items={stores}
+            onAddItem={handleAddStore}
+            onEditItem={handleEditStore}
+            onDeleteItem={handleDeleteStore}
           />
           <ItemManager
             items={items}
             categories={categories}
+            stores={stores}
             onEditItem={handleEditItem}
             onDeleteItem={handleDeleteItem}
           />
