@@ -1,4 +1,5 @@
 import React from "react";
+import { formatTimestamp } from "./dateTime";
 
 const uncategorizedStoreLabel = "店舗未設定";
 
@@ -63,6 +64,17 @@ function ShoppingList({ items, onPurchase, stores = [] }) {
                       {item.category}
                     </span>
                   </div>
+                  {formatTimestamp(item.issuedAt) && (
+                    <div
+                      style={{
+                        marginTop: 6,
+                        fontSize: "12px",
+                        color: "#7a5b5b",
+                      }}
+                    >
+                      発行日: {formatTimestamp(item.issuedAt)}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

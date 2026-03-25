@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { formatTimestamp } from "./dateTime";
+import "./ItemManager.css";
 import StoreSelector from "./StoreSelector";
 
 function ItemRow({ item, categories, stores, onEditItem, onDeleteItem }) {
@@ -16,74 +18,95 @@ function ItemRow({ item, categories, stores, onEditItem, onDeleteItem }) {
   };
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "minmax(160px, 2fr) minmax(120px, 1fr) minmax(260px, 1.8fr) auto auto",
-        gap: 8,
-        alignItems: "start",
-        padding: "10px 12px",
-        borderTop: "1px solid #c5bca8",
-        backgroundColor: item.issued ? "#f7d5d2" : "#ebe6da",
-      }}
-    >
-      <input
-        type="text"
-        value={draftName}
-        onChange={(event) => setDraftName(event.target.value)}
-        style={{
-          padding: "8px 10px",
-          border: "1px solid #9d927d",
-          backgroundColor: "#fffdf7",
-        }}
-      />
-      <select
-        value={draftCategory}
-        onChange={(event) => setDraftCategory(event.target.value)}
-        style={{
-          padding: "8px 10px",
-          border: "1px solid #9d927d",
-          backgroundColor: "#fffdf7",
-        }}
-      >
-        {categories.map((category) => (
-          <option key={category} value={category}>
-            {category}
-          </option>
-        ))}
-      </select>
-      <StoreSelector
-        stores={stores}
-        selectedStores={draftStores}
-        isOpen={isStorePickerOpen}
-        onToggleOpen={() => setIsStorePickerOpen((prev) => !prev)}
-        onToggleStore={toggleStore}
-        buttonLabel="店舗を選ぶ"
-      />
-      <button
-        type="button"
-        onClick={() => onEditItem(item.id, draftName, draftCategory, draftStores)}
-        style={{
-          padding: "8px 12px",
-          border: "1px solid #7c725f",
-          backgroundColor: "#d8cfbf",
-          cursor: "pointer",
-        }}
-      >
-        保存
-      </button>
-      <button
-        type="button"
-        onClick={() => onDeleteItem(item.id)}
-        style={{
-          padding: "8px 12px",
-          border: "1px solid #7c725f",
-          backgroundColor: "#c89f98",
-          cursor: "pointer",
-        }}
-      >
-        削除
-      </button>
+    <div className={`item-manager__row${item.issued ? " item-manager__row--issued" : ""}`}>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">アイテム</div>
+        <input
+          type="text"
+          value={draftName}
+          onChange={(event) => setDraftName(event.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px 10px",
+            border: "1px solid #9d927d",
+            backgroundColor: "#fffdf7",
+            boxSizing: "border-box",
+          }}
+        />
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">カテゴリ</div>
+        <select
+          value={draftCategory}
+          onChange={(event) => setDraftCategory(event.target.value)}
+          style={{
+            width: "100%",
+            padding: "8px 10px",
+            border: "1px solid #9d927d",
+            backgroundColor: "#fffdf7",
+            boxSizing: "border-box",
+          }}
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">店舗</div>
+        <StoreSelector
+          stores={stores}
+          selectedStores={draftStores}
+          isOpen={isStorePickerOpen}
+          onToggleOpen={() => setIsStorePickerOpen((prev) => !prev)}
+          onToggleStore={toggleStore}
+          buttonLabel="店舗を選ぶ"
+        />
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">発行日</div>
+        <div className="item-manager__timestamp">
+          {formatTimestamp(item.issuedAt) || "未記録"}
+        </div>
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">購入日</div>
+        <div className="item-manager__timestamp">
+          {formatTimestamp(item.purchasedAt) || "未記録"}
+        </div>
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">操作</div>
+        <button
+          type="button"
+          onClick={() => onEditItem(item.id, draftName, draftCategory, draftStores)}
+          style={{
+            padding: "8px 12px",
+            border: "1px solid #7c725f",
+            backgroundColor: "#d8cfbf",
+            cursor: "pointer",
+          }}
+        >
+          保存
+        </button>
+      </div>
+      <div className="item-manager__field">
+        <div className="item-manager__field-label">削除</div>
+        <button
+          type="button"
+          onClick={() => onDeleteItem(item.id)}
+          style={{
+            padding: "8px 12px",
+            border: "1px solid #7c725f",
+            backgroundColor: "#c89f98",
+            cursor: "pointer",
+          }}
+        >
+          削除
+        </button>
+      </div>
     </div>
   );
 }
@@ -98,41 +121,28 @@ function ItemManager({
   return (
     <section>
       <h3 style={{ marginBottom: 8 }}>アイテム編集</h3>
-      <div
-        style={{
-          border: "1px solid #b8ad98",
-          backgroundColor: "#e5dece",
-          borderRadius: 8,
-          overflow: "hidden",
-        }}
-      >
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(160px, 2fr) minmax(120px, 1fr) minmax(260px, 1.8fr) auto auto",
-            gap: 8,
-            padding: "10px 12px",
-            backgroundColor: "#d4cab7",
-            fontSize: 12,
-            letterSpacing: "0.08em",
-          }}
-        >
-          <div>ITEM</div>
-          <div>CATEGORY</div>
-          <div>STORE</div>
-          <div>ACTION</div>
-          <div>REMOVE</div>
+      <div className="item-manager__viewport">
+        <div className="item-manager__table">
+          <div className="item-manager__header">
+            <div>アイテム</div>
+            <div>カテゴリ</div>
+            <div>店舗</div>
+            <div>発行日</div>
+            <div>購入日</div>
+            <div>操作</div>
+            <div>削除</div>
+          </div>
+          {items.map((item) => (
+            <ItemRow
+              key={item.id}
+              item={item}
+              categories={categories}
+              stores={stores}
+              onEditItem={onEditItem}
+              onDeleteItem={onDeleteItem}
+            />
+          ))}
         </div>
-        {items.map((item) => (
-          <ItemRow
-            key={item.id}
-            item={item}
-            categories={categories}
-            stores={stores}
-            onEditItem={onEditItem}
-            onDeleteItem={onDeleteItem}
-          />
-        ))}
       </div>
     </section>
   );

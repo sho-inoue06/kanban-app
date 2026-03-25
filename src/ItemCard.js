@@ -1,4 +1,9 @@
+import { formatTimestamp } from "./dateTime";
+
 function ItemCard({ item, onTap }) {
+  const statusLabel = item.issued ? "発行日" : "購入日";
+  const statusTimestamp = formatTimestamp(item.issued ? item.issuedAt : item.purchasedAt);
+
   return (
     <div
       onClick={() => onTap(item.id)}
@@ -19,6 +24,11 @@ function ItemCard({ item, onTap }) {
     >
       <div>{item.name}</div>
       <div style={{ fontSize: "14px", opacity: 0.9 }}>{item.category}</div>
+      {statusTimestamp && (
+        <div style={{ fontSize: "12px", opacity: 0.85 }}>
+          {statusLabel}: {statusTimestamp}
+        </div>
+      )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", justifyContent: "center" }}>
         {(item.stores || []).map((store) => (
           <span

@@ -10,11 +10,51 @@ const defaultCategories = ["日用品", "食品", "飲み物", "掃除", "その
 const defaultStores = ["フェルナ", "スギ薬局"];
 
 const defaultItems = [
-  { id: 1, name: "洗剤", issued: false, category: "掃除", stores: ["スギ薬局"] },
-  { id: 2, name: "シャンプー", issued: false, category: "日用品", stores: ["スギ薬局"] },
-  { id: 3, name: "トイレットペーパー", issued: false, category: "日用品", stores: ["フェルナ", "スギ薬局"] },
-  { id: 4, name: "ラップ", issued: false, category: "食品", stores: ["フェルナ"] },
-  { id: 5, name: "ゴミ袋", issued: false, category: "掃除", stores: ["フェルナ", "スギ薬局"] },
+  {
+    id: 1,
+    name: "洗剤",
+    issued: false,
+    category: "掃除",
+    stores: ["スギ薬局"],
+    issuedAt: null,
+    purchasedAt: null,
+  },
+  {
+    id: 2,
+    name: "シャンプー",
+    issued: false,
+    category: "日用品",
+    stores: ["スギ薬局"],
+    issuedAt: null,
+    purchasedAt: null,
+  },
+  {
+    id: 3,
+    name: "トイレットペーパー",
+    issued: false,
+    category: "日用品",
+    stores: ["フェルナ", "スギ薬局"],
+    issuedAt: null,
+    purchasedAt: null,
+  },
+  {
+    id: 4,
+    name: "ラップ",
+    issued: false,
+    category: "食品",
+    stores: ["フェルナ"],
+    issuedAt: null,
+    purchasedAt: null,
+  },
+  {
+    id: 5,
+    name: "ゴミ袋",
+    issued: false,
+    category: "掃除",
+    stores: ["フェルナ", "スギ薬局"],
+    issuedAt: null,
+    purchasedAt: null,
+  },
 ];
 
 function App() {
@@ -53,6 +93,8 @@ function App() {
         ...item,
         category: item.category || defaultCategory,
         stores: Array.isArray(item.stores) ? item.stores : [],
+        issuedAt: item.issuedAt || null,
+        purchasedAt: item.purchasedAt || null,
       }));
     } catch {
       return defaultItems;
@@ -72,17 +114,25 @@ function App() {
   }, [stores]);
 
   const handleIssue = (id) => {
+    const now = new Date().toISOString();
+
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, issued: true } : item
+        item.id === id
+          ? { ...item, issued: true, issuedAt: now }
+          : item
       )
     );
   };
 
   const handlePurchase = (id) => {
+    const now = new Date().toISOString();
+
     setItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, issued: false } : item
+        item.id === id
+          ? { ...item, issued: false, purchasedAt: now }
+          : item
       )
     );
   };
@@ -97,6 +147,8 @@ function App() {
       issued: false,
       category: category || defaultCategory,
       stores: Array.isArray(stores) ? stores : [],
+      issuedAt: null,
+      purchasedAt: null,
     };
 
     setItems((prevItems) => [...prevItems, newItem]);
